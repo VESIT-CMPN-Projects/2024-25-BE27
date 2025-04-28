@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Youtube Video Comment Scraper and Sentiment Analyser</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header Section -->
+    <div class="max-w-7xl mx-auto p-8">
+        <h1 class="text-4xl font-bold text-center text-blue-600 mb-6">YouTube Video Comment Scraping & Sentiment Analysis</h1>
+        <!-- <p class="text-lg text-center mb-4">It takes approximately 5 to 6 minutes to scrape 1000 comments. Please be patient.</p>
+        <p class="text-sm text-center text-gray-600 mb-8">The application requires this time to scrape the comments of the video. Kindly wait for the process to finish.</p> -->
+
+        <!-- Form Section -->
+        <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <form method="post" action="/scrap">
+                <div class="mb-4">
+                    <label for="youtube_url" class="block text-sm font-semibold text-gray-700">
+                        Paste Your YouTube Video URL
+                    </label>
+                    <input type="text" id="youtube_url" name="youtube_url" 
+                           class="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+                           placeholder="e.g., https://www.youtube.com/watch?v=example"
+                           pattern="https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]+" 
+                           title="Enter a valid YouTube video URL"
+                           autocomplete="off" required>
+                </div>
+                
+
+                <!-- <div class="mb-4">
+                    <label for="user_email" class="block text-sm font-semibold text-gray-700">Enter Your Email Address</label>
+                    <input type="email" id="user_email" name="user mail id" class="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm" required>
+                </div> -->
+
+                <div class="flex justify-center mt-6">
+                    <button type="submit" id="scrap_button" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Scrap Comments
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="flex justify-center items-center space-x-1 mt-6 text-xl font-semibold text-blue-600 hidden">
+            <span style="--i:1" class="animate-pulse">F</span>
+            <span style="--i:2" class="animate-pulse">E</span>
+            <span style="--i:3" class="animate-pulse">T</span>
+            <span style="--i:4" class="animate-pulse">C</span>
+            <span style="--i:5" class="animate-pulse">H</span>
+            <span style="--i:6" class="animate-pulse">I</span>
+            <span style="--i:7" class="animate-pulse">N</span>
+            <span style="--i:8" class="animate-pulse">G&nbsp;</span>
+            <span style="--i:9" class="animate-pulse">C</span>
+            <span style="--i:10" class="animate-pulse">O</span>
+            <span style="--i:11" class="animate-pulse">M</span>
+            <span style="--i:12" class="animate-pulse">M</span>
+            <span style="--i:13" class="animate-pulse">E</span>
+            <span style="--i:14" class="animate-pulse">N</span>
+            <span style="--i:15" class="animate-pulse">T</span>
+            <span style="--i:16" class="animate-pulse">S</span>
+            <span style="--i:17" class="animate-pulse">.</span>
+            <span style="--i:18" class="animate-pulse">.</span>
+            <span style="--i:19" class="animate-pulse">.</span>
+            <span style="--i:20" class="animate-pulse">.</span>
+        </div>
+
+        <!-- After Process Completion -->
+        {% if after_complete_message %}
+        <div class="mt-8 p-6 bg-green-100 rounded-lg shadow-lg text-center">
+            <h3 class="text-xl font-semibold text-green-800">{{ after_complete_message }}</h3>
+            <div class="mt-4">
+                <p><span class="font-semibold">Video Title:</span> {{ title }}</p>
+                <p><span class="font-semibold">Video Published by:</span> {{ owner }}</p>
+                <p><span class="font-semibold">Total Comments (with replies):</span> {{ comment_w_replies }}</p>
+                <p><span class="font-semibold">Total Comments (without replies):</span> {{ comment_wo_replies }}</p>
+                <p><span class="font-semibold">Total Positive Comments:</span> {{ positive_comment }}</p>
+                <p><span class="font-semibold">Total Negative Comments:</span> {{ negative_comment }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Display Positive Comments -->
+        <div class="mt-8">
+            {% if after_complete_message %}
+            <h3 class="text-2xl font-semibold text-green-600 mb-4">Positive Comments</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto bg-white shadow-md rounded-lg">
+                    <thead>
+                        <tr class="bg-blue-600 text-white">
+                            <th class="p-3">Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pos_comments in pos_comments_csv %}
+                        <tr class="border-t">
+                            <td class="p-3">{{ pos_comments | safe }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Display Negative Comments -->
+        <div class="mt-8">
+            {% if after_complete_message %}
+            <h3 class="text-2xl font-semibold text-red-600 mb-4">Negative Comments</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto bg-white shadow-md rounded-lg">
+                    <thead>
+                        <tr class="bg-red-600 text-white">
+                            <th class="p-3">Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for neg_comments in neg_comments_csv %}
+                        <tr class="border-t">
+                            <td class="p-3">{{ neg_comments | safe }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        // Show loading spinner when the form is submitted
+        $("#scrap_button").click(function() {
+            $("#loading").removeClass('hidden');
+        });
+    </script>
+</body>
+</html>

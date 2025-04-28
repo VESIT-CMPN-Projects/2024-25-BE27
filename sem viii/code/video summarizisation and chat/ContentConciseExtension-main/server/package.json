@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@huggingface/inference": "^2.5.1",
+    "ai": "^2.1.32",
+    "marked": "^15.0.6",
+    "next": "13.4.4-canary.11",
+    "ollama-ai-provider": "^1.2.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.12",
+    "@types/react": "18.2.20",
+    "eslint": "^7.32.0",
+    "eslint-config-next": "13.4.4-canary.11",
+    "typescript": "5.1.3"
+  }
+}
